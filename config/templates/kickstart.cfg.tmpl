@@ -1,0 +1,31 @@
+install
+reboot
+text
+url --url=http://ftp.lysator.liu.se/pub/CentOS/8/BaseOS/x86_64/os/
+
+lang en_US.UTF-8
+keyboard --vckeymap=sv-latin1 --xlayouts='se'
+timezone --utc Europe/Stockholm
+
+network --bootproto=static --ip={{.Address}} --netmask={{.Netmask}} --gateway={{.Gateway}} --nameserver={{.Gateway}}
+network --hostname={{.Hostname}}.{{.Domain}}
+
+rootpw insecure
+
+selinux --enforcing
+firewall --enabled --ssh
+
+user --name=ansible --lock
+sshkey --username=ansible "{{.AnsibleKey}}"
+
+clearpart --all
+autopart
+bootloader --location=mbr
+
+%packages
+@^minimal-environment
+%end
+
+%post
+echo "%ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/10-ansible
+%end

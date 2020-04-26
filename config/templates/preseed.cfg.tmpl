@@ -1,0 +1,68 @@
+# Localization
+d-i debian-installer/language string en
+d-i debian-installer/country string SE
+d-i debian-installer/locale string en_US.UTF-8
+
+d-i keyboard-configuration/xkb-keymap select se
+
+# Network
+d-i netcfg/choose_interface select auto
+
+d-i netcfg/get_hostname string {{.Hostname}}
+d-i netcfg/get_domain string {{.Domain}}
+
+d-i netcfg/disable_autoconfig boolean true
+d-i netcfg/get_ipaddress string {{.Address}}
+d-i netcfg/get_netmask string {{.Netmask}}
+d-i netcfg/get_gateway string {{.Gateway}}
+d-i netcfg/get_nameservers string {{.Gateway}}
+d-i netcfg/confirm_static boolean true
+
+# Mirror
+d-i mirror/country string manual
+d-i mirror/http/hostname string http://ftp.se.debian.org
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string
+
+# Account
+d-i passwd/root-password password insecure
+d-i passwd/root-password-again password insecure
+d-i passwd/make-user boolean false
+
+# Clock and time
+d-i clock-setup/utc boolean true
+d-i time/zone string Europe/Stockholm
+d-i clock-setup/ntp boolean true
+
+# Partitioning/boot loader
+d-i partman-auto/method string regular
+d-i partman-auto/choose_recipe select atomic
+
+d-i partman-md/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/bootdev string default
+
+# Packages
+tasksel tasksel/first multiselect standard
+d-i pkgsel/include string openssh-server sudo
+popularity-contest popularity-contest/participate boolean false
+
+# Finish up
+d-i finish-install/reboot_in_progress note
+
+# Create a user for Ansible
+d-i preseed/late_command string \
+    in-target useradd -s /bin/bash -m ansible; \
+    in-target usermod -L ansible; \
+    in-target mkdir -m 700 /home/ansible/.ssh; \
+    in-target chown ansible. /home/ansible/.ssh; \
+    in-target touch /home/ansible/.ssh/authorized_keys; \
+    in-target chmod 400 /home/ansible/.ssh/authorized_keys; \
+    in-target chown ansible. /home/ansible/.ssh/authorized_keys; \
+    echo "{{.AnsibleKey}}" > /target/home/ansible/.ssh/authorized_keys; \
+    echo "%ansible ALL=(ALL) NOPASSWD: ALL" > /target/etc/sudoers.d/10-ansible

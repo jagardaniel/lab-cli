@@ -1,0 +1,27 @@
+# Change this if you have virt-install installed somewhere else
+#virt_install_path = "/usr/bin/virt-install"
+
+# Public SSH key that will be added into the authorized_keys-file for the Ansible user
+ansible_public_key = ""
+
+# If you want to be able to use the ssh subcommand you need to specify a path to the private SSH key
+ansible_private_key_path = "~/.ssh/labcli_private"
+
+# Configuration for the network libvirt network that will be created
+# If you want to modify anything in this section after the network was created (first run)
+# you need to remove the network and the VMs first.
+[network]
+name = "labnet"
+domain = "lab.local"
+bridge_name = "virbr100"
+address = "192.168.100.1"
+netmask = "255.255.255.0"
+range_start = "192.168.100.10"
+range_end = "192.168.100.200"
+
+# Distribution specific settings
+[debian]
+location = "http://ftp.se.debian.org/debian/dists/buster/main/installer-amd64/"
+
+[centos]
+location = "http://mirror.nsc.liu.se/CentOS/8/BaseOS/x86_64/kickstart/"
