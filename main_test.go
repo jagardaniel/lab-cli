@@ -2,8 +2,35 @@ package main
 
 import (
 	"net"
+	"os"
+	"os/user"
+	"path"
 	"testing"
 )
+
+// This test also tests getConfigDir
+func TestGetTemplateDir(t *testing.T) {
+	// Test without XDG_CONFIG_DIR set
+	os.Unsetenv("XDG_CONFIG_HOME")
+
+	user, _ := user.Current()
+	expectedDir := path.Join(user.HomeDir, ".config", "lab-cli", "templates")
+	templateDir, _ := getTemplateDir()
+
+	if templateDir != expectedDir {
+		t.Errorf("did not get the template directoy we wanted. got: %s, want: %s", templateDir, expectedDir)
+	}
+
+	// With XDG_CONFIG_DIR set
+	os.Setenv("XDG_CONFIG_HOME", path.Join("/tmp", ".config"))
+
+	expectedDir = path.Join("/tmp", ".config", "lab-cli", "templates")
+	templateDir, _ = getTemplateDir()
+
+	if templateDir != expectedDir {
+		t.Errorf("did not get the template directoy we wanted. got: %s, want: %s", templateDir, expectedDir)
+	}
+}
 
 func TestNextAddress(t *testing.T) {
 	var tests = []struct {
