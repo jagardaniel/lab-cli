@@ -49,7 +49,7 @@ d-i grub-installer/bootdev string default
 
 # Packages
 tasksel tasksel/first multiselect standard
-d-i pkgsel/include string openssh-server sudo
+d-i pkgsel/include string openssh-server sudo gpg
 popularity-contest popularity-contest/participate boolean false
 
 # Finish up
